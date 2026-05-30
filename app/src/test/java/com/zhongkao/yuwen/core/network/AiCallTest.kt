@@ -7,13 +7,10 @@ import com.zhongkao.yuwen.data.ai.DeepSeekApi
 import com.zhongkao.yuwen.data.ai.ModelOption
 import com.zhongkao.yuwen.data.ai.ResponseMessage
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import retrofit2.HttpException
-import retrofit2.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -66,21 +63,19 @@ class AiCallTest {
     }
 
     @Test
-    fun `限流可重试鉴权不可重试`() {
-        assertTrue(AiErrors.isTransient(httpException(429)))
-        assertTrue(AiErrors.isTransient(httpException(503)))
-        assertFalse(AiErrors.isTransient(httpException(401)))
+    fun `限流5xx可重试鉴权不可重试`() {
+        assertTrue(AiErrors.isTransientHttp(429))
+        assertTrue(AiErrors.isTransientHttp(503))
+        assertFalse(AiErrors.isTransientHttp(401))
         assertFalse(AiErrors.isTransient(UnknownHostException()))
+        assertTrue(AiErrors.isTransient(SocketTimeoutException()))
     }
 
     @Test
-    fun `错误分类映射为对应中文提示`() {
-        assertTrue(AiErrors.friendlyMessage(httpException(401)).contains("API Key"))
-        assertTrue(AiErrors.friendlyMessage(httpException(429)).contains("限流"))
-        assertTrue(AiErrors.friendlyMessage(httpException(500)).contains("服务暂时不可用"))
+    fun `HTTP状态码映射为对应中文提示`() {
+        assertTrue(AiErrors.httpMessage(401).contains("API Key"))
+        assertTrue(AiErrors.httpMessage(429).contains("限流"))
+        assertTrue(AiErrors.httpMessage(500).contains("服务暂时不可用"))
         assertTrue(AiErrors.friendlyMessage(SocketTimeoutException()).contains("超时"))
     }
-
-    private fun httpException(code: Int): HttpException =
-        HttpException(Response.error<Any>(code, "".toResponseBody(null)))
 }
