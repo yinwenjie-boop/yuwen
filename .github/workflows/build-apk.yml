@@ -29,9 +29,23 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # 5) 跑单元测试（校验器 / 时间评价 / 答题计时器）；失败即中断，不出包
+      # 5) 跑单元测试；输出同时写入 build-output.log，便于失败时下载排查
+      #    （含 Kotlin 编译 e: 行 / 测试失败明细）。失败即中断，不出包。
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: ./gradlew testDebugUnitTest --stacktrace --console=plain 2>&1 | tee build-output.log
+
+      # 5.1) 无论成败都上传完整构建日志与测试报告，便于诊断编译/测试失败
+      - name: Upload build logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            build-output.log
+            app/build/reports/
+            app/build/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
 
       # 6) 编译 debug APK（个人自用，debug 签名即可安装）
       - name: Build debug APK
