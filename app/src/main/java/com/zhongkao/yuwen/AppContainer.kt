@@ -3,6 +3,7 @@ package com.zhongkao.yuwen
 import android.content.Context
 import com.zhongkao.yuwen.core.network.NetworkModule
 import com.zhongkao.yuwen.core.security.SecureKeyStore
+import com.zhongkao.yuwen.core.settings.IncentiveSettingsStore
 import com.zhongkao.yuwen.data.ai.DeepSeekApi
 import com.zhongkao.yuwen.data.db.AppDatabase
 import com.zhongkao.yuwen.data.repository.ExerciseRepository
@@ -15,6 +16,7 @@ import com.zhongkao.yuwen.domain.ExamConfig
 import com.zhongkao.yuwen.domain.usecase.GenerateExerciseUseCase
 import com.zhongkao.yuwen.domain.usecase.GenerationRequest
 import com.zhongkao.yuwen.domain.usecase.GradeExerciseUseCase
+import com.zhongkao.yuwen.domain.usecase.RecordResultsUseCase
 
 /**
  * 轻量手写依赖容器（阶段 0 不引入 Hilt，保持单 module 简单）。
@@ -25,6 +27,9 @@ class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
     val secureKeyStore: SecureKeyStore by lazy { SecureKeyStore(appContext) }
+
+    /** 激励数值（XP/积分/连胜系数），设置页可调、本地存。 */
+    val incentiveSettingsStore: IncentiveSettingsStore by lazy { IncentiveSettingsStore(appContext) }
 
     private val database: AppDatabase by lazy { AppDatabase.get(appContext) }
 
@@ -59,8 +64,20 @@ class AppContainer(context: Context) {
         GradeExerciseUseCase(deepSeekApi, secureKeyStore)
     }
 
+    /** 阶段 4：批改后写错题本 + 薄弱点 + 激励（数值现取，改设置即时生效）。 */
+    val recordResultsUseCase: RecordResultsUseCase by lazy {
+        RecordResultsUseCase(
+            wrongBook = wrongBookRepository,
+            progress = progressRepository,
+            configProvider = { incentiveSettingsStore.getConfig() }
+        )
+    }
+
     /** 出题设置页 → 答题页之间传递本次出题请求（单用户本地 App，内存暂存即可）。 */
     var pendingRequest: GenerationRequest? = null
+
+    /** 复习页"针对薄弱点再出一套" → 出题设置页预填的侧重考点。 */
+    var pendingFocus: String? = null
 
     /**
      * 首次启动灌库：仅当语料表为空时，从 assets 读取课内/课外种子并按防伪规则导入。

@@ -4,6 +4,7 @@ import com.zhongkao.yuwen.data.db.Attempt
 import com.zhongkao.yuwen.data.db.AttemptDao
 import com.zhongkao.yuwen.data.db.Exercise
 import com.zhongkao.yuwen.data.db.ExerciseDao
+import com.zhongkao.yuwen.data.db.ExerciseTimePoint
 import com.zhongkao.yuwen.data.db.Question
 import com.zhongkao.yuwen.data.db.QuestionDao
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,10 @@ class ExerciseRepository(
     private val attemptDao: AttemptDao
 ) {
     fun observeAll(): Flow<List<Exercise>> = exerciseDao.observeAll()
+
+    /** 近 N 次已批改练习的用时点（用于薄弱点页的"用时曲线"，按时间升序便于画图）。 */
+    fun observeRecentGraded(limit: Int = 10): Flow<List<ExerciseTimePoint>> =
+        exerciseDao.observeRecentGraded(limit)
 
     data class SavedExercise(val exerciseId: Long, val questionIds: List<Long>)
 

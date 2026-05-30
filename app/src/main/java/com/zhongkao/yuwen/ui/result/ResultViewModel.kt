@@ -10,8 +10,12 @@ import com.zhongkao.yuwen.data.ai.GradingResult
 import com.zhongkao.yuwen.data.ai.PointCheck
 import com.zhongkao.yuwen.data.ai.QuestionGrade
 import com.zhongkao.yuwen.data.db.Question
+import com.zhongkao.yuwen.data.db.UserProgress
+import com.zhongkao.yuwen.domain.TimeEvaluator
+import com.zhongkao.yuwen.domain.incentive.LevelSystem
 import com.zhongkao.yuwen.domain.usecase.GradeExerciseUseCase
 import com.zhongkao.yuwen.domain.usecase.GenerationRequest
+import com.zhongkao.yuwen.domain.usecase.RecordResultsUseCase
 import com.zhongkao.yuwen.domain.usecase.SettlementCalculator
 import com.zhongkao.yuwen.domain.usecase.StudentAnswerDto
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,13 +39,30 @@ data class GradedItem(
     val timeSec: Int
 )
 
+/** 即时结算 / 进度展示（练后激励四件套之"结算动画"数据）。 */
+data class RewardView(
+    val xpGained: Int,
+    val coinsGained: Int,
+    val totalXp: Int,
+    val totalCoins: Int,
+    val level: Int,
+    val levelTitle: String,
+    val xpIntoLevel: Int,
+    val xpPerLevel: Int,
+    val leveledUp: Boolean,
+    val newBadges: List<String>,
+    val streakDays: Int,
+    val freshlyGraded: Boolean       // 首次批改才真正发放，重看结果只展示当前进度
+)
+
 data class ResultView(
     val items: List<GradedItem>,
     val totalGot: Int,
     val totalFull: Int,
     val weakPoints: List<String>,
     val nextAdvice: String,
-    val settlement: ExerciseSettlement
+    val settlement: ExerciseSettlement,
+    val reward: RewardView
 )
 
 sealed interface ResultUiState {
@@ -90,6 +111,7 @@ class ResultViewModel(
         }
 
         // 取批改结果：已批改读快照；否则现批改并写回。
+        var freshlyGraded = false
         val grading: GradingResult = if (exercise.status == "graded" && exercise.gradingJson.isNotBlank()) {
             runCatching { AppJson.decodeFromString(GradingResult.serializer(), exercise.gradingJson) }
                 .getOrNull() ?: run { _state.value = ResultUiState.Failed("批改快照损坏，请重试。"); return }
@@ -116,13 +138,17 @@ class ResultViewModel(
                             status = "graded"
                         )
                     )
+                    freshlyGraded = true
                     r.grading
                 }
             }
         }
 
         val perQuestionSec = gen.questions.associate { it.id to (attemptByGen[it.id]?.timeSpentSec ?: 0) }
-        val settlement = SettlementCalculator.build(
+        val gradeByGen = grading.perQuestion.associateBy { it.id }
+
+        // 先算一遍结算以拿到本次象限/是否达标。
+        val baseSettlement = SettlementCalculator.build(
             apiType = exercise.type,
             genre = genre,
             totalScore = gen.totalScore,
@@ -131,8 +157,55 @@ class ResultViewModel(
             grading = grading,
             examConfig = container.examConfig
         )
+        val quadrantCode = baseSettlement.badgeEarned?.code
+        val targetMet = quadrantCode == TimeEvaluator.Quadrant.FAST_ACCURATE.code
 
-        val gradeByGen = grading.perQuestion.associateBy { it.id }
+        // 首次批改：错题入本 + 薄弱点滚动 + 发激励（只发一次）。
+        val freshReward: RecordResultsUseCase.Reward? = if (freshlyGraded) {
+            val outcomes = questionRows.mapNotNull { row ->
+                val g = gradeByGen[row.genId] ?: return@mapNotNull null
+                RecordResultsUseCase.QuestionOutcome(
+                    questionRoomId = row.id,
+                    abilityTag = row.abilityTag,
+                    gotScore = g.gotScore,
+                    maxScore = row.maxScore,
+                    timeSec = perQuestionSec[row.genId] ?: 0
+                )
+            }
+            container.recordResultsUseCase.record(
+                questions = outcomes,
+                totalGot = grading.totalGot,
+                quadrantCode = quadrantCode,
+                targetMet = targetMet,
+                exerciseId = exerciseId
+            )
+        } else null
+
+        val settlement = baseSettlement.copy(
+            xpGained = freshReward?.xpGained ?: 0,
+            coinsGained = freshReward?.coinsGained ?: 0
+        )
+
+        // 进度展示：用发放后的最新进度（重看结果则读当前进度）。
+        val config = container.incentiveSettingsStore.getConfig()
+        val progress: UserProgress = freshReward?.progress
+            ?: container.progressRepository.getProgress()
+            ?: UserProgress()
+        val reward = RewardView(
+            xpGained = freshReward?.xpGained ?: 0,
+            coinsGained = freshReward?.coinsGained ?: 0,
+            totalXp = progress.xp,
+            totalCoins = progress.coins,
+            level = progress.level,
+            levelTitle = progress.levelTitle,
+            xpIntoLevel = LevelSystem.xpIntoLevel(progress.xp, config.xpPerLevel),
+            xpPerLevel = config.xpPerLevel,
+            leveledUp = freshReward?.leveledUp ?: false,
+            newBadges = freshReward?.newBadges?.map { it.name } ?: emptyList(),
+            streakDays = progress.streakDays,
+            freshlyGraded = freshlyGraded
+        )
+
         val items = gen.questions.map { q ->
             val g = gradeByGen[q.id]
             GradedItem(
@@ -158,7 +231,8 @@ class ResultViewModel(
                 totalFull = grading.totalFull,
                 weakPoints = grading.weakPoints,
                 nextAdvice = grading.nextAdvice,
-                settlement = settlement
+                settlement = settlement,
+                reward = reward
             )
         )
     }

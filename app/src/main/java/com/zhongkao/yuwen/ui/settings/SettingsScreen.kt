@@ -29,21 +29,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.HorizontalDivider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.zhongkao.yuwen.core.security.SecureKeyStore
+import com.zhongkao.yuwen.core.settings.IncentiveSettingsStore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     keyStore: SecureKeyStore,
+    incentiveStore: IncentiveSettingsStore,
     onBack: () -> Unit,
     viewModel: SettingsViewModel = viewModel(
-        factory = viewModelFactory { initializer { SettingsViewModel(keyStore) } }
+        factory = viewModelFactory { initializer { SettingsViewModel(keyStore, incentiveStore) } }
     )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -94,12 +99,34 @@ fun SettingsScreen(
             )
 
             Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+            Text("激励数值（本地计算，可调）", style = androidx.compose.material3.MaterialTheme.typography.titleSmall)
+            val inc = state.incentive
+            IntField("每得 1 分 → XP", inc.xpPerScore) { viewModel.onIncentiveChange(inc.copy(xpPerScore = it)) }
+            IntField("达标额外 XP", inc.targetBonusXp) { viewModel.onIncentiveChange(inc.copy(targetBonusXp = it)) }
+            IntField("每得 1 分 → 积分", inc.coinsPerScore) { viewModel.onIncentiveChange(inc.copy(coinsPerScore = it)) }
+            IntField("每日打卡积分", inc.streakDailyCoins) { viewModel.onIncentiveChange(inc.copy(streakDailyCoins = it)) }
+            IntField("每级所需 XP", inc.xpPerLevel) { viewModel.onIncentiveChange(inc.copy(xpPerLevel = it)) }
+
+            Spacer(Modifier.height(8.dp))
             Button(onClick = viewModel::save, modifier = Modifier.fillMaxWidth()) {
                 Text("保存")
             }
             if (savedHint.isNotEmpty()) Text(savedHint)
         }
     }
+}
+
+@Composable
+private fun IntField(label: String, value: Int, onChange: (Int) -> Unit) {
+    OutlinedTextField(
+        value = value.toString(),
+        onValueChange = { v -> onChange(v.filter { it.isDigit() }.take(5).toIntOrNull() ?: 0) },
+        label = { Text(label) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

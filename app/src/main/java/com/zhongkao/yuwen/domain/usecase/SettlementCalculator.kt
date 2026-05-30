@@ -1,15 +1,16 @@
 package com.zhongkao.yuwen.domain.usecase
 
-import com.zhongkao.yuwen.data.ai.BadgeAward
 import com.zhongkao.yuwen.data.ai.ExerciseSettlement
 import com.zhongkao.yuwen.data.ai.GradingResult
 import com.zhongkao.yuwen.data.ai.QuestionTime
 import com.zhongkao.yuwen.domain.ExamConfig
 import com.zhongkao.yuwen.domain.TimeEvaluator
+import com.zhongkao.yuwen.domain.incentive.BadgeRules
 
 /**
  * 本次结算合成（SPEC §6/§7）：用 ExamConfig 的每分值基准 + TimeEvaluator 四象限，
- * 把"用时 × 正确率"合成 ExerciseSettlement。XP/积分/徽章为阶段 4 激励，这里留 0/null。
+ * 把"用时 × 正确率"合成 ExerciseSettlement。XP/积分由阶段 4 激励算好后传入展示；
+ * 徽章名按四象限取（与发章一致）。
  */
 object SettlementCalculator {
 
@@ -36,7 +37,9 @@ object SettlementCalculator {
         totalTimeSec: Int,
         perQuestionSec: Map<String, Int>,
         grading: GradingResult,
-        examConfig: ExamConfig
+        examConfig: ExamConfig,
+        xpGained: Int = 0,
+        coinsGained: Int = 0
     ): ExerciseSettlement {
         val acc = accuracy(grading)
         val baseline = examConfig.baselineRange(baselineKey(apiType, genre), totalScore)
@@ -58,9 +61,9 @@ object SettlementCalculator {
             slowestQuestion = slowest,
             timeRating = rating,
             accuracy = acc,
-            xpGained = 0,
-            coinsGained = 0,
-            badgeEarned = quadrantCode?.let { BadgeAward(it, rating) }
+            xpGained = xpGained,
+            coinsGained = coinsGained,
+            badgeEarned = BadgeRules.quadrantBadge(quadrantCode)
         )
     }
 }
