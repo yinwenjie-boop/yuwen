@@ -16,6 +16,7 @@ import com.zhongkao.yuwen.data.seed.CalibrationStore
 import com.zhongkao.yuwen.data.seed.SeedDataSource
 import com.zhongkao.yuwen.data.seed.SeedImporter
 import com.zhongkao.yuwen.domain.ExamConfig
+import com.zhongkao.yuwen.domain.usecase.ExerciseType
 import com.zhongkao.yuwen.domain.usecase.GenerateExerciseUseCase
 import com.zhongkao.yuwen.domain.usecase.GenerationRequest
 import com.zhongkao.yuwen.domain.usecase.GradeExerciseUseCase
@@ -91,6 +92,9 @@ class AppContainer(context: Context) {
 
     /** 复习页"针对薄弱点再出一套" → 出题设置页预填的侧重考点。 */
     var pendingFocus: String? = null
+
+    /** 首页"文言文/现代文练习"入口 → 出题设置页预选的题型（只取一次）。 */
+    var pendingType: ExerciseType? = null
 
     /**
      * 首次启动灌库：仅当语料表为空时，从 assets 读取课内/课外种子并按防伪规则导入。

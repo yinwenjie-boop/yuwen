@@ -14,11 +14,14 @@ import com.zhongkao.yuwen.domain.incentive.BadgeRules
  */
 object SettlementCalculator {
 
-    /** 把出题题型 + 现代文文体映射到 exam_config.json 的时间基准键。 */
+    /**
+     * 把出题题型 + 现代文文体映射到 exam_config.json 的时间基准键。
+     * 文学类（记叙文/散文/小说）→ narrative；实用/论述类（说明文/议论文/非连续性文本）→ expository。
+     */
     fun baselineKey(apiType: String, genre: String?): String = when (apiType) {
         ExerciseType.WENYAN_COMPARE.apiType -> ExamConfig.KEY_WENYAN_COMPARE
         ExerciseType.XIANDAI.apiType ->
-            if (genre == "说明文" || genre == "议论文") ExamConfig.KEY_XIANDAI_EXPOSITORY
+            if (genre == "说明文" || genre == "议论文" || genre == "非连续性文本") ExamConfig.KEY_XIANDAI_EXPOSITORY
             else ExamConfig.KEY_XIANDAI_NARRATIVE
         "wenyan_single" -> ExamConfig.KEY_WENYAN_SINGLE
         else -> ExamConfig.KEY_XIANDAI_NARRATIVE

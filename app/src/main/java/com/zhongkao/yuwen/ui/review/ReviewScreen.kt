@@ -160,6 +160,13 @@ private fun WeakPointCard(wp: WeakPointStat, onRePractice: () -> Unit) {
     }
 }
 
+/** 错题细节的一行「标签：内容」；内容为空则不渲染。 */
+@Composable
+private fun DetailLine(label: String, value: String) {
+    if (value.isBlank()) return
+    Text("$label：$value", style = MaterialTheme.typography.bodySmall)
+}
+
 @Composable
 private fun WrongGroupCard(group: WrongGroup, onMastered: (Long) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
@@ -176,9 +183,21 @@ private fun WrongGroupCard(group: WrongGroup, onMastered: (Long) -> Unit) {
             }
             if (expanded) {
                 group.items.forEach { item ->
-                    Column(modifier = Modifier.padding(top = 8.dp)) {
-                        Text("· ${item.qType}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                    Column(
+                        modifier = Modifier.padding(top = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(3.dp)
+                    ) {
+                        Text(
+                            "· ${item.qType}（得 ${item.gotScore}/${item.maxScore} 分）",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold
+                        )
                         Text(item.stem, style = MaterialTheme.typography.bodyMedium)
+                        DetailLine("你的作答", item.studentAnswer.ifBlank { "（未作答）" })
+                        DetailLine("正确答法", item.correctAnswer.ifBlank { item.refAnswer })
+                        DetailLine("错因", item.errorType)
+                        DetailLine("解析", item.explanation)
+                        DetailLine("提升建议", item.tip)
                         TextButton(onClick = { onMastered(item.wrongId) }) { Text("标记已掌握") }
                     }
                 }

@@ -31,6 +31,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import com.zhongkao.yuwen.AppContainer
 import com.zhongkao.yuwen.domain.usecase.ExerciseType
 import com.zhongkao.yuwen.domain.usecase.GenerationRequest
+import com.zhongkao.yuwen.domain.prompt.DifficultyProfile
 import com.zhongkao.yuwen.domain.usecase.SettlementCalculator
 import com.zhongkao.yuwen.ui.common.LabeledDropdown
 
@@ -48,11 +49,13 @@ fun SetupScreen(
 ) {
     // 复习页带入的侧重考点（只取一次后清空）。
     val initialFocus = remember { container.pendingFocus?.also { container.pendingFocus = null } }
+    // 首页"文言文/现代文练习"入口带入的预选题型（只取一次后清空）。
+    val initialType = remember { container.pendingType?.also { container.pendingType = null } }
 
-    var type by remember { mutableStateOf(ExerciseType.WENYAN_COMPARE) }
+    var type by remember { mutableStateOf(initialType ?: ExerciseType.WENYAN_COMPARE) }
     var difficulty by remember { mutableStateOf("中等") }
     var count by remember { mutableStateOf(4) }
-    var totalScore by remember { mutableStateOf("15") }
+    var totalScore by remember { mutableStateOf(if (initialType == ExerciseType.XIANDAI) "25" else "15") }
     var genre by remember { mutableStateOf("记叙文") }
     var focus by remember { mutableStateOf(initialFocus.orEmpty()) }
 
@@ -66,7 +69,9 @@ fun SetupScreen(
         totalScore = totalScore.toIntOrNull()?.coerceIn(1, 150) ?: 15,
         genre = if (type == ExerciseType.XIANDAI) genre else null,
         focus = focus.ifBlank { null },
-        targetWords = if (genre == "记叙文" || genre == "散文") 900 else 800
+        // 字数随难度档增长，叙事性文体（记叙/散文/小说）再上浮 100 字。
+        targetWords = DifficultyProfile.of(difficulty).xiandaiWords +
+            if (genre == "记叙文" || genre == "散文" || genre == "小说") 100 else 0
     )
 
     Scaffold(
@@ -108,7 +113,7 @@ fun SetupScreen(
 
             LabeledDropdown(
                 label = "难度",
-                options = listOf("基础", "中等", "偏难"),
+                options = DifficultyProfile.LABELS,
                 selected = difficulty,
                 onSelected = { difficulty = it }
             )
@@ -132,7 +137,7 @@ fun SetupScreen(
             if (type == ExerciseType.XIANDAI) {
                 LabeledDropdown(
                     label = "文体",
-                    options = listOf("记叙文", "散文", "说明文", "议论文"),
+                    options = listOf("记叙文", "散文", "小说", "说明文", "议论文", "非连续性文本"),
                     selected = genre,
                     onSelected = { genre = it }
                 )
