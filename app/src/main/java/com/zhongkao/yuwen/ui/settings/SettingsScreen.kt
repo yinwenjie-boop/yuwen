@@ -263,7 +263,6 @@ private fun CalibrationSection(
             onClick = {
                 calibrationStore.clearOverride()
                 hasOverride = false
-                tick++
                 hint = "已恢复内置估计值，重启应用后生效。"
             },
             modifier = Modifier.fillMaxWidth()
