@@ -29,11 +29,15 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # 5) 编译 debug APK（个人自用，debug 签名即可安装）
+      # 5) 跑单元测试（校验器 / 时间评价 / 答题计时器）；失败即中断，不出包
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      # 6) 编译 debug APK（个人自用，debug 签名即可安装）
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      # 6) 把 APK 作为 artifact 上传，可在本次运行页面下载
+      # 7) 把 APK 作为 artifact 上传，可在本次运行页面下载
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
