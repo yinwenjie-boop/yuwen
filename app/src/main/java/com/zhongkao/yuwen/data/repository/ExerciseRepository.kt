@@ -34,6 +34,8 @@ class ExerciseRepository(
     suspend fun questionsOf(exerciseId: Long): List<Question> = questionDao.byExercise(exerciseId)
 
     suspend fun saveAttempts(attempts: List<Attempt>): List<Long> = attemptDao.insertAll(attempts)
+    suspend fun updateAttempt(attempt: Attempt) = attemptDao.update(attempt)
+    suspend fun latestAttempt(questionId: Long): Attempt? = attemptDao.latestByQuestion(questionId)
     suspend fun updateExercise(exercise: Exercise) = exerciseDao.update(exercise)
     suspend fun findExercise(id: Long): Exercise? = exerciseDao.findById(id)
 }

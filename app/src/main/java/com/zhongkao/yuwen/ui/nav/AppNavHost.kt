@@ -1,12 +1,15 @@
 package com.zhongkao.yuwen.ui.nav
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.zhongkao.yuwen.AppContainer
 import com.zhongkao.yuwen.ui.dashboard.DashboardScreen
 import com.zhongkao.yuwen.ui.exercise.ExerciseScreen
+import com.zhongkao.yuwen.ui.result.ResultScreen
 import com.zhongkao.yuwen.ui.settings.SettingsScreen
 import com.zhongkao.yuwen.ui.setup.SetupScreen
 
@@ -15,6 +18,9 @@ object Routes {
     const val SETTINGS = "settings"
     const val SETUP = "setup"
     const val EXERCISE = "exercise"
+    const val RESULT = "result"
+    const val ARG_EXERCISE_ID = "exerciseId"
+    fun result(exerciseId: Long) = "$RESULT/$exerciseId"
 }
 
 @Composable
@@ -46,9 +52,23 @@ fun AppNavHost(container: AppContainer) {
         composable(Routes.EXERCISE) {
             ExerciseScreen(
                 container = container,
-                onExit = {
-                    nav.popBackStack(Routes.DASHBOARD, inclusive = false)
+                onExit = { nav.popBackStack(Routes.DASHBOARD, inclusive = false) },
+                onFinished = { id ->
+                    nav.navigate(Routes.result(id)) {
+                        popUpTo(Routes.EXERCISE) { inclusive = true }
+                    }
                 }
+            )
+        }
+        composable(
+            route = "${Routes.RESULT}/{${Routes.ARG_EXERCISE_ID}}",
+            arguments = listOf(navArgument(Routes.ARG_EXERCISE_ID) { type = NavType.LongType })
+        ) { entry ->
+            val id = entry.arguments?.getLong(Routes.ARG_EXERCISE_ID) ?: 0L
+            ResultScreen(
+                container = container,
+                exerciseId = id,
+                onExit = { nav.popBackStack(Routes.DASHBOARD, inclusive = false) }
             )
         }
     }

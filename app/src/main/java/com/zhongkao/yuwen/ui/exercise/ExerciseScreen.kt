@@ -49,6 +49,7 @@ import com.zhongkao.yuwen.data.ai.Passage
 fun ExerciseScreen(
     container: AppContainer,
     onExit: () -> Unit,
+    onFinished: (Long) -> Unit,
     viewModel: ExerciseViewModel = viewModel(
         factory = viewModelFactory { initializer { ExerciseViewModel(container) } }
     )
@@ -93,7 +94,7 @@ fun ExerciseScreen(
                     "本次出现需人工确认的课外篇，已拦截不入库：\n" + s.warnings.joinToString("\n") { "· $it" },
                     onRetry = viewModel::start, onExit = onExit
                 )
-                is ExerciseUiState.Submitted -> SubmittedBlock(s.totalSec, onExit)
+                is ExerciseUiState.Submitted -> SubmittedBlock(s.totalSec, onViewResult = { onFinished(s.exerciseId) })
                 is ExerciseUiState.Answering -> AnsweringBlock(s.generated, viewModel)
             }
         }
@@ -200,7 +201,7 @@ private fun PassageText(tag: String, p: Passage) {
 }
 
 @Composable
-private fun SubmittedBlock(totalSec: Int, onExit: () -> Unit) {
+private fun SubmittedBlock(totalSec: Int, onViewResult: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -208,10 +209,10 @@ private fun SubmittedBlock(totalSec: Int, onExit: () -> Unit) {
     ) {
         Text("已提交", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "本次用时 ${totalSec / 60} 分 ${totalSec % 60} 秒，每题用时已记录。\n踩点批改与时间评价将在下一阶段接入。",
+            "本次用时 ${totalSec / 60} 分 ${totalSec % 60} 秒，每题用时已记录。",
             modifier = Modifier.padding(top = 12.dp)
         )
-        Button(onClick = onExit, modifier = Modifier.padding(top = 20.dp)) { Text("返回首页") }
+        Button(onClick = onViewResult, modifier = Modifier.padding(top = 20.dp)) { Text("查看批改结果") }
     }
 }
 

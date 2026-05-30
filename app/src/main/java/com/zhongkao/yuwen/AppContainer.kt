@@ -14,6 +14,7 @@ import com.zhongkao.yuwen.data.seed.SeedImporter
 import com.zhongkao.yuwen.domain.ExamConfig
 import com.zhongkao.yuwen.domain.usecase.GenerateExerciseUseCase
 import com.zhongkao.yuwen.domain.usecase.GenerationRequest
+import com.zhongkao.yuwen.domain.usecase.GradeExerciseUseCase
 
 /**
  * 轻量手写依赖容器（阶段 0 不引入 Hilt，保持单 module 简单）。
@@ -52,6 +53,10 @@ class AppContainer(context: Context) {
 
     val generateExerciseUseCase: GenerateExerciseUseCase by lazy {
         GenerateExerciseUseCase(textBankRepository, deepSeekApi, secureKeyStore)
+    }
+
+    val gradeExerciseUseCase: GradeExerciseUseCase by lazy {
+        GradeExerciseUseCase(deepSeekApi, secureKeyStore)
     }
 
     /** 出题设置页 → 答题页之间传递本次出题请求（单用户本地 App，内存暂存即可）。 */

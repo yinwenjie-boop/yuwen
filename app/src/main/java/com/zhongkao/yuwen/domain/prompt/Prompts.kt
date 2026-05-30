@@ -52,4 +52,25 @@ object Prompts {
         val theme = req.focus?.takeIf { it.isNotBlank() }?.let { "，主题倾向=$it" } ?: ""
         return "文体=${genre}，字数≈${req.targetWords}，题量=${req.questionCount}，难度=${req.difficulty}${theme}。"
     }
+
+    /** A 2.4 批改（两类通用）system。 */
+    val GRADING_SYSTEM = """
+        你是常州中考语文阅卷老师，按“踩点给分”严格批改。对每题输出：
+        - got_score：依 score_points 命中给分，不超过 max_score；
+        - point_check：逐采分点{point,hit,score}，命中分合计应=got_score；
+        - error_type：错因，具体到知识点（如“误将‘之’判为代词”）；
+        - correct_answer：规范正确答法；
+        - explanation：为什么这样答、易错点；
+        - tip：一条可立即执行的提升建议，指向具体复习点。
+        最后给 total_got、total_full、weak_points、next_advice。只输出 JSON：
+        {"per_question":[{"id":"","got_score":0,"max_score":0,"point_check":[{"point":"","hit":true,"score":0}],"error_type":"","correct_answer":"","explanation":"","tip":""}],
+         "total_got":0,"total_full":0,"weak_points":[],"next_advice":""}
+    """.trimIndent()
+
+    /** A 2.4 user：填入出题 questions 原样 JSON 与学生作答。 */
+    fun gradingUser(questionsJson: String, answersJson: String): String = buildString {
+        appendLine("题目与参考答案：$questionsJson")
+        appendLine("学生作答：$answersJson")
+        append("请按上述规则批改。")
+    }
 }

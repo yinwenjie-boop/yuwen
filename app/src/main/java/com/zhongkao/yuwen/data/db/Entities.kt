@@ -42,9 +42,10 @@ data class Exercise(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val type: String,                     // wenyan_compare / wenyan_single / xiandai
     val createdAt: Long,
-    val configJson: String = "{}",        // 出题设置快照
+    val configJson: String = "{}",        // 出题设置快照(GenerationRequest)
     val payloadJson: String = "{}",       // 出题返回快照(GeneratedExercise)
-    val status: String = "draft",         // draft / answering / graded
+    val gradingJson: String = "",         // 批改返回快照(GradingResult)，供结果页重渲染
+    val status: String = "draft",         // draft / answering / submitted / graded
     val totalTimeSec: Int = 0             // 本次总用时
 )
 
@@ -77,6 +78,7 @@ data class Attempt(
     val gotScore: Int = 0,
     val pointCheck: String = "[]",        // JSON: List<PointCheck>
     val errorType: String = "",
+    val correctAnswer: String = "",       // 批改给的规范正确答法
     val explanation: String = "",
     val tip: String = "",
     val timeSpentSec: Int = 0,            // 本题用时

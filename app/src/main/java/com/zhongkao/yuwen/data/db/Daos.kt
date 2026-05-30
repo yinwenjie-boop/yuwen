@@ -74,6 +74,12 @@ interface AttemptDao {
     @Insert
     suspend fun insert(attempt: Attempt): Long
 
+    @Update
+    suspend fun update(attempt: Attempt)
+
+    @Query("SELECT * FROM attempt WHERE questionId = :questionId ORDER BY id DESC LIMIT 1")
+    suspend fun latestByQuestion(questionId: Long): Attempt?
+
     @Query("SELECT * FROM attempt WHERE questionId = :questionId ORDER BY gradedAt DESC")
     suspend fun byQuestion(questionId: Long): List<Attempt>
 }

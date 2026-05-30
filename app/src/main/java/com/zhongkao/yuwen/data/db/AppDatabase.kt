@@ -16,7 +16,7 @@ import androidx.room.RoomDatabase
         UserProgress::class,
         Badge::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
