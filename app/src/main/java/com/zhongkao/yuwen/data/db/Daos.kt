@@ -29,6 +29,9 @@ interface TextBankDao {
     @Query("SELECT * FROM text_bank WHERE title = :title LIMIT 1")
     suspend fun findByTitle(title: String): TextBank?
 
+    @Query("SELECT * FROM text_bank WHERE category = :category AND verified = 1 ORDER BY RANDOM() LIMIT 1")
+    suspend fun randomVerified(category: String): TextBank?
+
     @Query("SELECT COUNT(*) FROM text_bank")
     suspend fun count(): Int
 

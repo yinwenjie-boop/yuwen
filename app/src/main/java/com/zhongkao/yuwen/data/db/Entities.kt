@@ -56,6 +56,7 @@ data class Exercise(
 data class Question(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val exerciseId: Long,
+    val genId: String = "",               // AI 返回的题号(如 q1)，批改时按此匹配
     val qType: String,
     val stem: String,
     val refAnswer: String = "",

@@ -2,6 +2,7 @@ package com.zhongkao.yuwen.data.repository
 
 import com.zhongkao.yuwen.data.db.TextBank
 import com.zhongkao.yuwen.data.db.TextBankDao
+import com.zhongkao.yuwen.domain.usecase.PassageSource
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
  * 防伪职责（后续阶段实现）：课内固定语料只读；课外篇优先选库；
  * AI 提议课外篇 verified=false 时不得经此入正式题库（由 AiResponseValidator 拦截）。
  */
-class TextBankRepository(private val dao: TextBankDao) {
+class TextBankRepository(private val dao: TextBankDao) : PassageSource {
 
     fun observeKewen(): Flow<List<TextBank>> = dao.observeByCategory(CATEGORY_KEWEN)
     fun observeKewai(): Flow<List<TextBank>> = dao.observeByCategory(CATEGORY_KEWAI)
@@ -19,6 +20,10 @@ class TextBankRepository(private val dao: TextBankDao) {
 
     suspend fun findById(id: Long): TextBank? = dao.findById(id)
     suspend fun findByTitle(title: String): TextBank? = dao.findByTitle(title)
+
+    /** 随机取一篇已确认的课内/课外篇用于出题选篇。 */
+    override suspend fun randomKewen(): TextBank? = dao.randomVerified(CATEGORY_KEWEN)
+    override suspend fun randomKewai(): TextBank? = dao.randomVerified(CATEGORY_KEWAI)
     suspend fun count(): Int = dao.count()
 
     /** 仅供语料导入流程使用（阶段 1）。 */

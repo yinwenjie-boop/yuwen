@@ -19,6 +19,16 @@ class ExerciseRepository(
 ) {
     fun observeAll(): Flow<List<Exercise>> = exerciseDao.observeAll()
 
+    data class SavedExercise(val exerciseId: Long, val questionIds: List<Long>)
+
+    /** 出题落库：先存 Exercise，再存其题目（自动回填 exerciseId），返回各题 Room 主键（按顺序）。 */
+    suspend fun saveGenerated(exercise: Exercise, questions: List<Question>): SavedExercise {
+        val exerciseId = exerciseDao.insert(exercise)
+        val withFk = questions.map { it.copy(exerciseId = exerciseId) }
+        val ids = questionDao.insertAll(withFk)
+        return SavedExercise(exerciseId, ids)
+    }
+
     suspend fun createExercise(exercise: Exercise): Long = exerciseDao.insert(exercise)
     suspend fun saveQuestions(questions: List<Question>): List<Long> = questionDao.insertAll(questions)
     suspend fun questionsOf(exerciseId: Long): List<Question> = questionDao.byExercise(exerciseId)

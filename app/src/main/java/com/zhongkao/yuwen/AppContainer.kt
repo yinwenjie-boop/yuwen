@@ -12,6 +12,8 @@ import com.zhongkao.yuwen.data.repository.WrongBookRepository
 import com.zhongkao.yuwen.data.seed.SeedDataSource
 import com.zhongkao.yuwen.data.seed.SeedImporter
 import com.zhongkao.yuwen.domain.ExamConfig
+import com.zhongkao.yuwen.domain.usecase.GenerateExerciseUseCase
+import com.zhongkao.yuwen.domain.usecase.GenerationRequest
 
 /**
  * 轻量手写依赖容器（阶段 0 不引入 Hilt，保持单 module 简单）。
@@ -47,6 +49,13 @@ class AppContainer(context: Context) {
     val deepSeekApi: DeepSeekApi by lazy {
         NetworkModule.createDeepSeekApi(secureKeyStore)
     }
+
+    val generateExerciseUseCase: GenerateExerciseUseCase by lazy {
+        GenerateExerciseUseCase(textBankRepository, deepSeekApi, secureKeyStore)
+    }
+
+    /** 出题设置页 → 答题页之间传递本次出题请求（单用户本地 App，内存暂存即可）。 */
+    var pendingRequest: GenerationRequest? = null
 
     /**
      * 首次启动灌库：仅当语料表为空时，从 assets 读取课内/课外种子并按防伪规则导入。

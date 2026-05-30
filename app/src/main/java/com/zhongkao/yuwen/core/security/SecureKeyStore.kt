@@ -5,13 +5,14 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.zhongkao.yuwen.data.ai.ModelOption
+import com.zhongkao.yuwen.domain.usecase.DeepSeekCredentials
 
 /**
  * API Key 与模型选项的安全存取（SPEC 硬约束 4）。
  *  - 用 EncryptedSharedPreferences 加密落盘；
  *  - 绝不硬编码、绝不打印、绝不上传；本类不提供任何日志输出。
  */
-class SecureKeyStore(context: Context) {
+class SecureKeyStore(context: Context) : DeepSeekCredentials {
 
     private val prefs: SharedPreferences by lazy {
         val masterKey = MasterKey.Builder(context.applicationContext)
@@ -32,7 +33,9 @@ class SecureKeyStore(context: Context) {
         prefs.edit().putString(KEY_API, value.trim()).apply()
     }
 
-    fun hasApiKey(): Boolean = getApiKey().isNotBlank()
+    override fun hasApiKey(): Boolean = getApiKey().isNotBlank()
+
+    override fun modelOption(): ModelOption = getModelOption()
 
     fun getModelOption(): ModelOption {
         val name = prefs.getString(KEY_MODEL, null)

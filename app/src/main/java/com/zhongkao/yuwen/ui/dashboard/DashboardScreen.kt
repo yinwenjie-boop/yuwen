@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +37,7 @@ import com.zhongkao.yuwen.data.repository.TextBankRepository
 @Composable
 fun DashboardScreen(
     textBankRepository: TextBankRepository,
+    onStartPractice: () -> Unit,
     onOpenSettings: () -> Unit,
     viewModel: DashboardViewModel = viewModel(
         factory = viewModelFactory { initializer { DashboardViewModel(textBankRepository) } }
@@ -78,11 +80,19 @@ fun DashboardScreen(
                 CountCard("课外对比语料", kewai, "篇", Modifier.weight(1f))
             }
             Text(
-                text = "课内 22 篇为不可由 AI 改写的固定原文；课外篇均带真实出处。\n出题与批改闭环将在下一阶段接入。",
+                text = "课内为不可由 AI 改写的固定原文；课外篇均带真实出处。",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 20.dp)
             )
+            Button(
+                onClick = onStartPractice,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
+            ) {
+                Text("开始练习")
+            }
         }
     }
 }
