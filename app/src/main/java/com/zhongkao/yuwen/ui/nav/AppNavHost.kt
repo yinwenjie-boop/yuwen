@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.zhongkao.yuwen.core.security.SecureKeyStore
+import com.zhongkao.yuwen.AppContainer
 import com.zhongkao.yuwen.ui.dashboard.DashboardScreen
 import com.zhongkao.yuwen.ui.settings.SettingsScreen
 
@@ -14,15 +14,18 @@ object Routes {
 }
 
 @Composable
-fun AppNavHost(keyStore: SecureKeyStore) {
+fun AppNavHost(container: AppContainer) {
     val nav = rememberNavController()
     NavHost(navController = nav, startDestination = Routes.DASHBOARD) {
         composable(Routes.DASHBOARD) {
-            DashboardScreen(onOpenSettings = { nav.navigate(Routes.SETTINGS) })
+            DashboardScreen(
+                textBankRepository = container.textBankRepository,
+                onOpenSettings = { nav.navigate(Routes.SETTINGS) }
+            )
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(
-                keyStore = keyStore,
+                keyStore = container.secureKeyStore,
                 onBack = { nav.popBackStack() }
             )
         }

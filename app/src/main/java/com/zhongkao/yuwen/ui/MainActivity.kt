@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         val container = YuwenApp.from(application)
         setContent {
             ZhongkaoYuwenTheme {
-                AppNavHost(keyStore = container.secureKeyStore)
+                AppNavHost(container = container)
             }
         }
     }

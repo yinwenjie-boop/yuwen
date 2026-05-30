@@ -16,7 +16,7 @@ import androidx.room.RoomDatabase
         UserProgress::class,
         Badge::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -41,7 +41,11 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     DB_NAME
-                ).build().also { INSTANCE = it }
+                )
+                    // 阶段开发期、尚未发布正式版：表结构升级时直接重建。
+                    // 后续若有正式数据需保留，应改为编写 Migration。
+                    .fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
             }
     }
 }

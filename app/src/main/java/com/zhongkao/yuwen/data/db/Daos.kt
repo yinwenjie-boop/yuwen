@@ -31,6 +31,9 @@ interface TextBankDao {
 
     @Query("SELECT COUNT(*) FROM text_bank")
     suspend fun count(): Int
+
+    @Query("SELECT COUNT(*) FROM text_bank WHERE category = :category")
+    fun observeCountByCategory(category: String): Flow<Int>
 }
 
 @Dao

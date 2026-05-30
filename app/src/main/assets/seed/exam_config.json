@@ -1,0 +1,87 @@
+{
+  "_meta": {
+    "about": "命题与时间基准配置。⚠️ 重要：本文件数值来自常州近年真题反推与公开备考资料，为估计值，非官方命题说明。",
+    "official_doc_status": "PENDING_2026",
+    "calibration_instruction": [
+      "1) 拿到常州市2026《语文学科命题说明/考试说明》后，按其中的精确分值、题型示例、篇目范围逐项替换 estimated 标记的字段。",
+      "2) 替换后把对应字段的 source 改为 'official_2026'，confidence 改为 'high'。",
+      "3) kewen_scope 篇目以官方为准；本表默认=统编版课内22篇。"
+    ],
+    "region": "常州市",
+    "exam_year": 2026
+  },
+
+  "paper": {
+    "total_score": 120,
+    "duration_min": 150,
+    "source": "official_2026_招生意见(语文120) + 真题(时长150)",
+    "confidence": "high"
+  },
+
+  "sections": [
+    {"name": "积累与运用", "score": 20, "source": "真题反推", "confidence": "medium"},
+    {"name": "文言文阅读(课内外对比)", "score": 15, "source": "真题反推", "confidence": "medium"},
+    {"name": "现代文阅读", "score": "约35", "source": "真题反推", "confidence": "low", "note": "含1-2篇，分值待校准"},
+    {"name": "作文", "score": "约50", "source": "真题反推", "confidence": "low"}
+  ],
+
+  "question_types": {
+    "wenyan": ["实词解释", "虚词辨析", "断句", "句子翻译", "内容理解/人物形象"],
+    "xiandai": ["主旨概括", "词句含义与作用", "人物形象", "写作手法及作用", "结构思路", "情感态度"],
+    "high_freq_xuci": ["之", "而", "于", "以"],
+    "source": "真题反推+课标",
+    "confidence": "medium"
+  },
+
+  "time_baseline": {
+    "_note": "sec_per_score 用于 TimeEvaluator 按本次实际总分归一化；typical_minutes 为单次练习的人读区间；excellent_max_sec 为优秀线。均为估计，待校准。",
+    "wenyan_compare": {
+      "typical_minutes": [16, 20],
+      "sec_per_score": [64, 80],
+      "excellent_max_sec": 960,
+      "source": "公开备考资料(文言约20min/阅读每篇15-20min)",
+      "confidence": "medium"
+    },
+    "wenyan_single": {
+      "typical_minutes": [8, 12],
+      "sec_per_score": [60, 90],
+      "excellent_max_sec": 540,
+      "source": "估计",
+      "confidence": "low"
+    },
+    "xiandai_narrative": {
+      "typical_minutes": [18, 25],
+      "sec_per_score": [60, 83],
+      "excellent_max_sec": 1200,
+      "source": "公开备考资料(记叙文约25min)",
+      "confidence": "medium"
+    },
+    "xiandai_expository": {
+      "typical_minutes": [12, 18],
+      "sec_per_score": [55, 83],
+      "excellent_max_sec": 840,
+      "source": "估计",
+      "confidence": "low"
+    },
+    "accuracy_threshold": 0.8
+  },
+
+  "kewen_scope": {
+    "textbook": "统编版(部编版)",
+    "pieces": [
+      "论语十二章", "陋室铭", "爱莲说", "河中石兽", "三峡", "答谢中书书",
+      "记承天寺夜游", "富贵不能淫", "生于忧患，死于安乐", "桃花源记", "小石潭记",
+      "北冥有鱼", "虽有嘉肴", "马说", "岳阳楼记", "醉翁亭记", "湖心亭看雪",
+      "鱼我所欲也", "送东阳马生序", "曹刿论战", "邹忌讽齐王纳谏", "出师表"
+    ],
+    "source": "教材",
+    "confidence": "high",
+    "note": "若官方命题说明圈定更小范围，以官方为准"
+  },
+
+  "official_doc": {
+    "status": "PENDING_2026",
+    "how_to_get": "向学校/区教研室索取常州市2026语文学科命题说明，或关注常州市教育局/教育考试院发布。",
+    "raw_text_placeholder": ""
+  }
+}

@@ -14,18 +14,25 @@ import androidx.room.PrimaryKey
  */
 
 /** 文言语料库：课内 22 篇为固定语料（verified=true），课外篇按可靠性入库。 */
-@Entity(tableName = "text_bank")
+@Entity(
+    tableName = "text_bank",
+    indices = [Index(value = ["seedId"], unique = true)]
+)
 data class TextBank(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val seedId: String = "",              // 种子库稳定标识(如 kw_loushiming)；用于幂等导入与对比配对
     val category: String,                 // 课内 / 课外
     val title: String,
     val author: String = "",
     val dynasty: String = "",
+    val grade: String = "",               // 学段(如 七下)，仅课内有
     val text: String,
     val notes: String = "[]",             // JSON: List<Note>
     val translation: String = "",
+    val abilityFocus: String = "[]",      // JSON: List<String> 考点关联
     val sourceRef: String = "",           // 出处：书名+朝代+作者
     val theme: String = "",
+    val linkHint: String = "",            // 课外篇：可与哪类课内篇目对比
     val verified: Boolean = false         // 课内固定语料=true；AI 提议课外篇=false 待人工确认
 )
 

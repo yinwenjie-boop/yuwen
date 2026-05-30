@@ -14,6 +14,9 @@ class TextBankRepository(private val dao: TextBankDao) {
     fun observeKewen(): Flow<List<TextBank>> = dao.observeByCategory(CATEGORY_KEWEN)
     fun observeKewai(): Flow<List<TextBank>> = dao.observeByCategory(CATEGORY_KEWAI)
 
+    fun observeKewenCount(): Flow<Int> = dao.observeCountByCategory(CATEGORY_KEWEN)
+    fun observeKewaiCount(): Flow<Int> = dao.observeCountByCategory(CATEGORY_KEWAI)
+
     suspend fun findById(id: Long): TextBank? = dao.findById(id)
     suspend fun findByTitle(title: String): TextBank? = dao.findByTitle(title)
     suspend fun count(): Int = dao.count()

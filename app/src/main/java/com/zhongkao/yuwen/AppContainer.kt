@@ -9,6 +9,9 @@ import com.zhongkao.yuwen.data.repository.ExerciseRepository
 import com.zhongkao.yuwen.data.repository.ProgressRepository
 import com.zhongkao.yuwen.data.repository.TextBankRepository
 import com.zhongkao.yuwen.data.repository.WrongBookRepository
+import com.zhongkao.yuwen.data.seed.SeedDataSource
+import com.zhongkao.yuwen.data.seed.SeedImporter
+import com.zhongkao.yuwen.domain.ExamConfig
 
 /**
  * 轻量手写依赖容器（阶段 0 不引入 Hilt，保持单 module 简单）。
@@ -16,9 +19,11 @@ import com.zhongkao.yuwen.data.repository.WrongBookRepository
  */
 class AppContainer(context: Context) {
 
-    val secureKeyStore: SecureKeyStore by lazy { SecureKeyStore(context) }
+    private val appContext = context.applicationContext
 
-    private val database: AppDatabase by lazy { AppDatabase.get(context) }
+    val secureKeyStore: SecureKeyStore by lazy { SecureKeyStore(appContext) }
+
+    private val database: AppDatabase by lazy { AppDatabase.get(appContext) }
 
     val textBankRepository: TextBankRepository by lazy {
         TextBankRepository(database.textBankDao())
@@ -33,8 +38,39 @@ class AppContainer(context: Context) {
         WrongBookRepository(database.wrongQuestionDao(), database.weakPointStatDao())
     }
 
+    private val seedDataSource: SeedDataSource by lazy { SeedDataSource(appContext) }
+
+    /** 命题/时间基准配置（随包内置，解析一次）。 */
+    val examConfig: ExamConfig by lazy { ExamConfig.parse(seedDataSource.readExamConfigJson()) }
+
     /** DeepSeek 客户端：Key 在每次请求时从 SecureKeyStore 现取，改 Key 即时生效。 */
     val deepSeekApi: DeepSeekApi by lazy {
         NetworkModule.createDeepSeekApi(secureKeyStore)
     }
+
+    /**
+     * 首次启动灌库：仅当语料表为空时，从 assets 读取课内/课外种子并按防伪规则导入。
+     * 返回本次导入汇总；已灌过则返回 null。
+     */
+    suspend fun seedIfNeeded(): SeedSummary? {
+        if (textBankRepository.count() > 0) return null
+
+        val kewen = SeedImporter.import(seedDataSource.readKewenJson())
+        val kewai = SeedImporter.import(seedDataSource.readKewaiJson())
+
+        val all = kewen.importable + kewai.importable
+        if (all.isNotEmpty()) textBankRepository.seed(all)
+
+        return SeedSummary(
+            kewenImported = kewen.kewenCount,
+            kewaiImported = kewai.kewaiCount,
+            skipped = kewen.skipped + kewai.skipped
+        )
+    }
+
+    data class SeedSummary(
+        val kewenImported: Int,
+        val kewaiImported: Int,
+        val skipped: List<SeedImporter.Skipped>
+    )
 }
