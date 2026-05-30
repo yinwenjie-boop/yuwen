@@ -66,4 +66,12 @@ class GradeExerciseUseCaseTest {
         val result = useCase.grade(questions, answers, expectedIds = setOf("q1"))
         assertTrue(result is GradeExerciseUseCase.Result.Failure)
     }
+
+    @Test
+    fun `批改返回非JSON时兜底为失败不抛异常`() = runTest {
+        val useCase = GradeExerciseUseCase(FakeApi("抱歉，我暂时无法批改这道题。"), FakeCreds(has = true))
+        val result = useCase.grade(questions, answers, expectedIds = setOf("q1"))
+        assertTrue("应为 Failure 而非 $result", result is GradeExerciseUseCase.Result.Failure)
+        assertTrue((result as GradeExerciseUseCase.Result.Failure).message.contains("JSON"))
+    }
 }

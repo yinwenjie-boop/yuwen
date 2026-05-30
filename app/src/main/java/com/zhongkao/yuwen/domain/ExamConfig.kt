@@ -13,7 +13,8 @@ import com.zhongkao.yuwen.data.seed.TimeBaselineDto
  */
 class ExamConfig(
     private val baselines: Map<String, TimeBaseline>,
-    val accuracyThreshold: Double
+    val accuracyThreshold: Double,
+    val meta: ExamConfigMeta
 ) {
     fun baseline(typeKey: String): TimeBaseline? = baselines[typeKey]
 
@@ -36,7 +37,15 @@ class ExamConfig(
                 s.xiandaiNarrative?.toModel()?.let { put(KEY_XIANDAI_NARRATIVE, it) }
                 s.xiandaiExpository?.toModel()?.let { put(KEY_XIANDAI_EXPOSITORY, it) }
             }
-            return ExamConfig(map, s.accuracyThreshold)
+            val meta = with(dto.meta) {
+                ExamConfigMeta(
+                    officialDocStatus = officialDocStatus,
+                    examYear = examYear,
+                    region = region,
+                    calibrationInstruction = calibrationInstruction
+                )
+            }
+            return ExamConfig(map, s.accuracyThreshold, meta)
         }
 
         private fun TimeBaselineDto.toModel(): TimeBaseline? {
@@ -56,3 +65,19 @@ data class TimeBaseline(
     val typicalMinutes: IntRange,          // 单次练习人读区间(分钟)
     val excellentMaxSec: Int               // 优秀线(秒)
 )
+
+/**
+ * 命题配置元信息（来自 exam_config.json 的 _meta），用于阶段 5 的校准入口展示。
+ * [isCalibrated]=false 表示当前仍为「真题反推 + 公开资料」的估计值，尚未用官方命题说明校准。
+ */
+data class ExamConfigMeta(
+    val officialDocStatus: String,
+    val examYear: Int,
+    val region: String,
+    val calibrationInstruction: List<String>
+) {
+    /** PENDING_* 视为未校准；官方命题说明落地后状态应改为 official_* 等非 PENDING 值。 */
+    val isCalibrated: Boolean
+        get() = officialDocStatus.isNotBlank() &&
+            !officialDocStatus.startsWith("PENDING", ignoreCase = true)
+}

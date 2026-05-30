@@ -34,6 +34,24 @@ object Prompts {
         }
     }
 
+    /**
+     * A 2.2 出题 · 文言（AI 提议课外篇·兜底）：本地课外库为空时追加到对比 system 之后。
+     * 严守防伪：只能引真实传世文献，不能确认出处时输出空 text 并打 need_human_review。
+     */
+    val WENYAN_PROPOSE_APPENDIX = """
+        若需你补充乙文：必须是真实存在的传世文献片段，注明 source_ref(书名+朝代+作者)；禁止原创/改写/仿写文言文；不能确认真实出处时，输出空 text 并将 need_human_review 置 true、verified 置 false，在 source_ref 写明原因。
+    """.trimIndent()
+
+    /** A 2.2 user：仅给课内甲文，请 AI 据实补充乙文（结果须经人工确认才入库）。 */
+    fun wenyanProposeUser(jia: TextBank, req: GenerationRequest): String {
+        val focus = req.focus?.takeIf { it.isNotBlank() } ?: "虚词之、句子翻译"
+        return buildString {
+            appendLine("【甲·课内】${jia.title}（${jia.author}·${jia.dynasty}）：${jia.text}")
+            appendLine("【乙·课外】本地课外库暂无合适篇目，请你按上述规则补充一篇真实存在的课外文言片段作为乙文，并据实填写 source_ref/verified/need_human_review。")
+            append("要求：total_score=${req.totalScore}，题量约${req.questionCount}题，难度=${req.difficulty}，侧重考点=${focus}。")
+        }
+    }
+
     /** A 2.3 出题 · 现代文（type=xiandai）system，按文体/字数/题量动态填充。 */
     fun xiandaiSystem(req: GenerationRequest): String {
         val genre = req.genre?.takeIf { it.isNotBlank() } ?: "记叙文"

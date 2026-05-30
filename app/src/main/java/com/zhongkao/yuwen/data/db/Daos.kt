@@ -37,6 +37,19 @@ interface TextBankDao {
 
     @Query("SELECT COUNT(*) FROM text_bank WHERE category = :category")
     fun observeCountByCategory(category: String): Flow<Int>
+
+    // —— 阶段 5：AI 提议课外篇的人工确认流（verified=0 即「待确认」）——
+    @Query("SELECT * FROM text_bank WHERE category = :category AND verified = 0 ORDER BY id DESC")
+    fun observePending(category: String): Flow<List<TextBank>>
+
+    @Query("SELECT COUNT(*) FROM text_bank WHERE category = :category AND verified = 0")
+    fun observePendingCount(category: String): Flow<Int>
+
+    @Query("UPDATE text_bank SET verified = :verified WHERE id = :id")
+    suspend fun setVerified(id: Long, verified: Boolean)
+
+    @Query("DELETE FROM text_bank WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }
 
 /** 用时曲线投影：仅取画曲线所需字段，避免拉出大段出题/批改快照。 */
@@ -115,6 +128,9 @@ interface WrongQuestionDao {
     @Query("UPDATE wrong_question SET masteredFlag = :mastered WHERE id = :id")
     suspend fun setMastered(id: Long, mastered: Boolean)
 
+    @Query("SELECT * FROM wrong_question ORDER BY addedAt DESC")
+    suspend fun getAll(): List<WrongQuestion>
+
     @Query("SELECT * FROM wrong_question WHERE masteredFlag = 0 ORDER BY addedAt DESC")
     fun observeUnmastered(): Flow<List<WrongQuestion>>
 
@@ -147,6 +163,9 @@ interface WeakPointStatDao {
     @Query("SELECT * FROM weak_point_stat ORDER BY wrongCount DESC, avgTimeSec DESC")
     fun observeAll(): Flow<List<WeakPointStat>>
 
+    @Query("SELECT * FROM weak_point_stat")
+    suspend fun getAll(): List<WeakPointStat>
+
     @Query("SELECT * FROM weak_point_stat WHERE abilityTag = :tag")
     suspend fun find(tag: String): WeakPointStat?
 }
@@ -170,4 +189,7 @@ interface BadgeDao {
 
     @Query("SELECT * FROM badge ORDER BY earnedAt DESC")
     fun observeAll(): Flow<List<Badge>>
+
+    @Query("SELECT * FROM badge ORDER BY earnedAt DESC")
+    suspend fun getAll(): List<Badge>
 }

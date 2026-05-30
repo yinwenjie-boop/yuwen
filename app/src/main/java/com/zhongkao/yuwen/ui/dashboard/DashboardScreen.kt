@@ -44,6 +44,7 @@ fun DashboardScreen(
     onStartPractice: () -> Unit,
     onOpenReview: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenPendingReview: () -> Unit,
     viewModel: DashboardViewModel = viewModel(
         factory = viewModelFactory { initializer { DashboardViewModel(container) } }
     )
@@ -53,6 +54,7 @@ fun DashboardScreen(
     val progress by viewModel.progress.collectAsStateWithLifecycle()
     val wrongCount by viewModel.wrongCount.collectAsStateWithLifecycle()
     val weakPoints by viewModel.topWeakPoints.collectAsStateWithLifecycle()
+    val pendingReview by viewModel.pendingReviewCount.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -117,6 +119,11 @@ fun DashboardScreen(
             }
             OutlinedButton(onClick = onOpenReview, modifier = Modifier.fillMaxWidth()) {
                 Text("错题与薄弱点（$wrongCount 道错题）")
+            }
+            if (pendingReview > 0) {
+                OutlinedButton(onClick = onOpenPendingReview, modifier = Modifier.fillMaxWidth()) {
+                    Text("待确认课外篇（$pendingReview 篇待人工确认）")
+                }
             }
 
             // 语料库篇数（阶段 1 验证）。

@@ -1,6 +1,8 @@
 package com.zhongkao.yuwen.domain.usecase
 
 import com.zhongkao.yuwen.core.json.AppJson
+import com.zhongkao.yuwen.core.network.AiCallException
+import com.zhongkao.yuwen.core.network.chatResilient
 import com.zhongkao.yuwen.data.ai.AiResponseValidator
 import com.zhongkao.yuwen.data.ai.ChatRequest
 import com.zhongkao.yuwen.data.ai.DeepSeekApi
@@ -48,16 +50,17 @@ class GradeExerciseUseCase(
         val user = Prompts.gradingUser(questionsJson, answersJson)
 
         val raw = try {
-            api.chat(ChatRequest.build(credentials.modelOption(), Prompts.GRADING_SYSTEM, user)).answer()
-        } catch (e: Exception) {
-            return Result.Failure("调用 DeepSeek 失败：${e.message ?: "网络错误"}，请检查网络与余额后重试。")
+            api.chatResilient(ChatRequest.build(credentials.modelOption(), Prompts.GRADING_SYSTEM, user))
+        } catch (e: AiCallException) {
+            return Result.Failure(e.friendly)
         }
         if (raw.isBlank()) return Result.Failure("AI 未返回内容，请重试。")
 
+        // 解析失败兜底：清洗后仍不是合法 JSON 时不写脏数据，给出可重试的友好提示。
         val grading = try {
             AppJson.decodeFromString(GradingResult.serializer(), extractJson(raw))
         } catch (e: Exception) {
-            return Result.Failure("批改返回不是合法 JSON，请重试。")
+            return Result.Failure("批改返回不是合法 JSON，已拦截不入库，请重试。")
         }
 
         val report = AiResponseValidator.validateGrading(grading, expectedIds)

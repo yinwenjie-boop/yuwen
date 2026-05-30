@@ -24,6 +24,10 @@ class DashboardViewModel(container: AppContainer) : ViewModel() {
     val kewaiCount: StateFlow<Int> = textBank.observeKewaiCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 
+    /** 待人工确认的 AI 提议课外篇数（>0 时首页露出入口）。 */
+    val pendingReviewCount: StateFlow<Int> = textBank.observePendingCount()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
     val progress: StateFlow<UserProgress?> = progressRepo.observeProgress()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 

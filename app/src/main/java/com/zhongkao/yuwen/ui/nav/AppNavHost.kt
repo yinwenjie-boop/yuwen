@@ -10,6 +10,7 @@ import com.zhongkao.yuwen.AppContainer
 import com.zhongkao.yuwen.ui.dashboard.DashboardScreen
 import com.zhongkao.yuwen.ui.exercise.ExerciseScreen
 import com.zhongkao.yuwen.ui.result.ResultScreen
+import com.zhongkao.yuwen.ui.review.PendingReviewScreen
 import com.zhongkao.yuwen.ui.review.ReviewScreen
 import com.zhongkao.yuwen.ui.settings.SettingsScreen
 import com.zhongkao.yuwen.ui.setup.SetupScreen
@@ -21,6 +22,7 @@ object Routes {
     const val EXERCISE = "exercise"
     const val RESULT = "result"
     const val REVIEW = "review"
+    const val PENDING_REVIEW = "pending_review"
     const val ARG_EXERCISE_ID = "exerciseId"
     fun result(exerciseId: Long) = "$RESULT/$exerciseId"
 }
@@ -34,13 +36,19 @@ fun AppNavHost(container: AppContainer) {
                 container = container,
                 onStartPractice = { nav.navigate(Routes.SETUP) },
                 onOpenReview = { nav.navigate(Routes.REVIEW) },
-                onOpenSettings = { nav.navigate(Routes.SETTINGS) }
+                onOpenSettings = { nav.navigate(Routes.SETTINGS) },
+                onOpenPendingReview = { nav.navigate(Routes.PENDING_REVIEW) }
             )
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(
-                keyStore = container.secureKeyStore,
-                incentiveStore = container.incentiveSettingsStore,
+                container = container,
+                onBack = { nav.popBackStack() }
+            )
+        }
+        composable(Routes.PENDING_REVIEW) {
+            PendingReviewScreen(
+                container = container,
                 onBack = { nav.popBackStack() }
             )
         }

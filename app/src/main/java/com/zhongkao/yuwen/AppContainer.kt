@@ -5,11 +5,14 @@ import com.zhongkao.yuwen.core.network.NetworkModule
 import com.zhongkao.yuwen.core.security.SecureKeyStore
 import com.zhongkao.yuwen.core.settings.IncentiveSettingsStore
 import com.zhongkao.yuwen.data.ai.DeepSeekApi
+import com.zhongkao.yuwen.data.backup.BackupManager
+import com.zhongkao.yuwen.data.backup.RoomBackupStore
 import com.zhongkao.yuwen.data.db.AppDatabase
 import com.zhongkao.yuwen.data.repository.ExerciseRepository
 import com.zhongkao.yuwen.data.repository.ProgressRepository
 import com.zhongkao.yuwen.data.repository.TextBankRepository
 import com.zhongkao.yuwen.data.repository.WrongBookRepository
+import com.zhongkao.yuwen.data.seed.CalibrationStore
 import com.zhongkao.yuwen.data.seed.SeedDataSource
 import com.zhongkao.yuwen.data.seed.SeedImporter
 import com.zhongkao.yuwen.domain.ExamConfig
@@ -46,10 +49,20 @@ class AppContainer(context: Context) {
         WrongBookRepository(database.wrongQuestionDao(), database.weakPointStatDao())
     }
 
+    /** 阶段 6：错题本/薄弱点/进度/徽章的导出与导入（不含 API Key）。 */
+    val backupManager: BackupManager by lazy { BackupManager(RoomBackupStore(database)) }
+
     private val seedDataSource: SeedDataSource by lazy { SeedDataSource(appContext) }
 
-    /** 命题/时间基准配置（随包内置，解析一次）。 */
-    val examConfig: ExamConfig by lazy { ExamConfig.parse(seedDataSource.readExamConfigJson()) }
+    /** 命题校准入口：管理 exam_config 的「校准覆盖文件」，优先于内置估计值。 */
+    val calibrationStore: CalibrationStore by lazy { CalibrationStore(appContext, seedDataSource) }
+
+    /**
+     * 命题/时间基准配置（启动时解析一次）。
+     * 若已导入校准覆盖文件则用校准值，否则用随包内置估计值。
+     * 导入新校准文件后，重启应用即生效。
+     */
+    val examConfig: ExamConfig by lazy { ExamConfig.parse(calibrationStore.readActiveExamConfigJson()) }
 
     /** DeepSeek 客户端：Key 在每次请求时从 SecureKeyStore 现取，改 Key 即时生效。 */
     val deepSeekApi: DeepSeekApi by lazy {

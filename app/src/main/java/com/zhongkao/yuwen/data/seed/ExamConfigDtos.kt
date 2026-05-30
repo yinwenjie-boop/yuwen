@@ -9,7 +9,17 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ExamConfigDto(
+    @SerialName("_meta") val meta: ExamConfigMetaDto = ExamConfigMetaDto(),
     @SerialName("time_baseline") val timeBaseline: TimeBaselineSectionDto = TimeBaselineSectionDto()
+)
+
+/** exam_config.json 的 _meta：校准状态与校准指引（阶段 5 校准入口展示用）。 */
+@Serializable
+data class ExamConfigMetaDto(
+    @SerialName("official_doc_status") val officialDocStatus: String = "",
+    @SerialName("exam_year") val examYear: Int = 0,
+    @SerialName("region") val region: String = "",
+    @SerialName("calibration_instruction") val calibrationInstruction: List<String> = emptyList()
 )
 
 @Serializable
