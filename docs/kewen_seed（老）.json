@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "about": "课内文言文种子库。原文为公有领域古文；notes/translation 由本项目原创撰写，未抄录任何教材版权内容。",
+    "fill_instruction": "text 为空且含 _todo 的条目，请从统编版教材逐字粘贴原文，并补全 notes/translation；core: 准确性优先，宁可留空也不要放未经核对的原文。",
+    "schema": "对应 SPEC §4 TextBank：id, category, title, author, dynasty, grade, theme, ability_focus, text, notes[{term,explain}], translation, source_ref, verified"
+  },
+  "items": [
+    {
+      "id": "kw_loushiming",
+      "category": "课内",
+      "title": "陋室铭",
+      "author": "刘禹锡",
+      "dynasty": "唐",
+      "grade": "七下",
+      "theme": "托物言志·安贫乐道",
+      "ability_focus": ["文言虚词之", "托物言志", "内容理解"],
+      "text": "山不在高，有仙则名。水不在深，有龙则灵。斯是陋室，惟吾德馨。苔痕上阶绿，草色入帘青。谈笑有鸿儒，往来无白丁。可以调素琴，阅金经。无丝竹之乱耳，无案牍之劳形。南阳诸葛庐，西蜀子云亭。孔子云：何陋之有？",
+      "notes": [
+        {"term": "馨", "explain": "香气，这里指品德高尚"},
+        {"term": "鸿儒", "explain": "博学的人"},
+        {"term": "白丁", "explain": "平民，这里指没有学问的人"},
+        {"term": "金经", "explain": "指佛经"},
+        {"term": "丝竹", "explain": "奏乐的声音"},
+        {"term": "案牍", "explain": "官府公文"},
+        {"term": "劳形", "explain": "使身体劳累"}
+      ],
+      "translation": "山不在于高，有仙人居住就出名；水不在于深，有龙栖息就显灵。这是简陋的屋子，只因我的品德高尚就不觉得简陋。苔痕长上台阶染绿了，草色映入帘中显得青葱。谈笑的都是博学之人，往来的没有浅薄之辈。可以弹奏朴素的琴，阅读佛经。没有嘈杂的音乐扰乱听觉，没有官府公文使身体劳累。它好比南阳诸葛亮的草庐、西蜀扬子云的亭子。孔子说：有什么简陋的呢？",
+      "source_ref": "唐·刘禹锡《陋室铭》",
+      "verified": true
+    },
+    {
+      "id": "kw_ailianshuo",
+      "category": "课内",
+      "title": "爱莲说",
+      "author": "周敦颐",
+      "dynasty": "北宋",
+      "grade": "七下",
+      "theme": "托物言志·君子品格",
+      "ability_focus": ["文言虚词之", "衬托手法", "托物言志"],
+      "text": "水陆草木之花，可爱者甚蕃。晋陶渊明独爱菊。自李唐来，世人甚爱牡丹。予独爱莲之出淤泥而不染，濯清涟而不妖，中通外直，不蔓不枝，香远益清，亭亭净植，可远观而不可亵玩焉。予谓菊，花之隐逸者也；牡丹，花之富贵者也；莲，花之君子者也。噫！菊之爱，陶后鲜有闻。莲之爱，同予者何人？牡丹之爱，宜乎众矣。",
+      "notes": [
+        {"term": "蕃", "explain": "多"},
+        {"term": "濯", "explain": "洗涤"},
+        {"term": "清涟", "explain": "清水"},
+        {"term": "妖", "explain": "艳丽"},
+        {"term": "蔓", "explain": "生藤蔓（作动词）"},
+        {"term": "亵玩", "explain": "轻慢地玩弄"},
+        {"term": "鲜", "explain": "少"}
+      ],
+      "translation": "水陆草木的花，可爱的很多。晋代陶渊明只爱菊花。自唐朝以来，世人很爱牡丹。我只爱莲花从污泥里长出却不沾染污秽，经清水洗涤而不显艳俗，茎内空外直，不生藤蔓不长枝节，香气远播更显清芬，洁净地挺立水中，只可远观而不可轻慢玩弄。我认为，菊是花中的隐士，牡丹是花中的富贵者，莲是花中的君子。唉！对菊花的喜爱，陶渊明之后很少听到了；对莲花的喜爱，像我这样的还有谁？对牡丹的喜爱，那应当是很多人了。",
+      "source_ref": "北宋·周敦颐《爱莲说》",
+      "verified": true
+    },
+    {
+      "id": "kw_jichengtiansi",
+      "category": "课内",
+      "title": "记承天寺夜游",
+      "author": "苏轼",
+      "dynasty": "北宋",
+      "grade": "八上",
+      "theme": "写景抒情·旷达自适",
+      "ability_focus": ["写景手法", "句子翻译", "作者情感"],
+      "text": "元丰六年十月十二日夜，解衣欲睡，月色入户，欣然起行。念无与为乐者，遂至承天寺寻张怀民。怀民亦未寝，相与步于中庭。庭下如积水空明，水中藻、荇交横，盖竹柏影也。何夜无月？何处无竹柏？但少闲人如吾两人者耳。",
+      "notes": [
+        {"term": "念", "explain": "想到"},
+        {"term": "遂", "explain": "于是、就"},
+        {"term": "相与", "explain": "共同、一起"},
+        {"term": "空明", "explain": "清澈透明"},
+        {"term": "盖", "explain": "大概是、原来是"},
+        {"term": "但", "explain": "只是"},
+        {"term": "耳", "explain": "罢了"}
+      ],
+      "translation": "元丰六年十月十二日夜里，我脱衣准备睡觉，月光照进门里，我高兴地起身出门。想到没有可以一起游乐的人，于是到承天寺寻找张怀民。怀民也没睡，我们便一起在庭院散步。庭院中月光像积水一样清澈透明，水中仿佛有藻、荇交错，原来是竹子和柏树的影子。哪个夜晚没有月光？哪个地方没有竹柏？只是缺少像我们两个这样清闲的人罢了。",
+      "source_ref": "北宋·苏轼《记承天寺夜游》",
+      "verified": true
+    },
+    {
+      "id": "kw_dxiezhongshushu",
+      "category": "课内",
+      "title": "答谢中书书",
+      "author": "陶弘景",
+      "dynasty": "南朝",
+      "grade": "八上",
+      "theme": "写景·山水之美",
+      "ability_focus": ["写景手法", "句子翻译", "实词"],
+      "text": "山川之美，古来共谈。高峰入云，清流见底。两岸石壁，五色交辉。青林翠竹，四时俱备。晓雾将歇，猿鸟乱鸣；夕日欲颓，沉鳞竞跃。实是欲界之仙都。自康乐以来，未复有能与其奇者。",
+      "notes": [
+        {"term": "共谈", "explain": "共同谈论赏玩"},
+        {"term": "四时", "explain": "四季"},
+        {"term": "歇", "explain": "消散"},
+        {"term": "颓", "explain": "坠落"},
+        {"term": "沉鳞", "explain": "潜游水中的鱼"},
+        {"term": "欲界", "explain": "佛教指人间"},
+        {"term": "康乐", "explain": "指南朝谢灵运，曾封康乐公"},
+        {"term": "与", "explain": "读yù，参与，这里指欣赏、领悟"}
+      ],
+      "translation": "山川的美景，自古以来就是人们共同谈赏的。高峰耸入云端，清流澄澈能见到水底。两岸石壁，五彩交相辉映。青翠的树林竹丛，四季都有。清晨的雾将要消散时，猿和鸟此起彼伏地鸣叫；夕阳将落时，潜游的鱼争相跃出水面。这实在是人间的仙境。自谢灵运以来，就再没有能欣赏这奇景的人了。",
+      "source_ref": "南朝·陶弘景《答谢中书书》",
+      "verified": true
+    },
+    {
+      "id": "kw_suiyoujiayao",
+      "category": "课内",
+      "title": "虽有嘉肴",
+      "author": "《礼记》",
+      "dynasty": "先秦",
+      "grade": "八下",
+      "theme": "议论说理·教学相长",
+      "ability_focus": ["实词", "句子翻译", "议论说理"],
+      "text": "虽有嘉肴，弗食，不知其旨也；虽有至道，弗学，不知其善也。是故学然后知不足，教然后知困。知不足，然后能自反也；知困，然后能自强也。故曰：教学相长也。《兑命》曰“学学半”，其此之谓乎！",
+      "notes": [
+        {"term": "嘉肴", "explain": "美味的菜"},
+        {"term": "旨", "explain": "味美"},
+        {"term": "至道", "explain": "最好的道理"},
+        {"term": "困", "explain": "困惑"},
+        {"term": "自反", "explain": "自我反省"},
+        {"term": "自强", "explain": "自我勉励"},
+        {"term": "学学半", "explain": "前一“学”读xiào，同“敩”，教导；意为教别人占自己学习的一半"}
+      ],
+      "translation": "即使有美味的菜肴，不去吃，就不知道它的味美；即使有最好的道理，不去学，就不知道它的好处。所以学习之后才知道自己的不足，教人之后才知道自己有困惑。知道不足，然后能自我反省；知道困惑，然后能自我勉励。所以说：教与学是互相促进的。《兑命》说“教别人占自己学习的一半”，大概说的就是这个道理吧！",
+      "source_ref": "先秦《礼记·学记》",
+      "verified": true
+    },
+
+    {"id": "kw_lunyu12", "category": "课内", "title": "《论语》十二章", "author": "孔子及弟子", "dynasty": "先秦", "grade": "七上", "theme": "修身治学", "ability_focus": ["实词", "默写", "议论说理"], "text": "", "notes": [], "translation": "", "source_ref": "先秦《论语》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_hezhongshishou", "category": "课内", "title": "河中石兽", "author": "纪昀", "dynasty": "清", "grade": "七下", "theme": "事理思辨", "ability_focus": ["实词", "句子翻译", "内容理解"], "text": "", "notes": [], "translation": "", "source_ref": "清·纪昀《阅微草堂笔记》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_sanxia", "category": "课内", "title": "三峡", "author": "郦道元", "dynasty": "北魏", "grade": "八上", "theme": "写景·山水", "ability_focus": ["写景手法", "句子翻译", "实词"], "text": "", "notes": [], "translation": "", "source_ref": "北魏·郦道元《水经注》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_fuguibunengyin", "category": "课内", "title": "富贵不能淫", "author": "《孟子》", "dynasty": "先秦", "grade": "八上", "theme": "议论·大丈夫", "ability_focus": ["议论说理", "句子翻译", "虚词"], "text": "", "notes": [], "translation": "", "source_ref": "先秦《孟子·滕文公下》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_shengyuyouhuan", "category": "课内", "title": "生于忧患，死于安乐", "author": "《孟子》", "dynasty": "先秦", "grade": "八上", "theme": "议论·忧患", "ability_focus": ["议论说理", "句子翻译", "实词"], "text": "", "notes": [], "translation": "", "source_ref": "先秦《孟子·告子下》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_taohuayuanji", "category": "课内", "title": "桃花源记", "author": "陶渊明", "dynasty": "东晋", "grade": "八下", "theme": "理想社会", "ability_focus": ["实词", "句子翻译", "内容理解"], "text": "", "notes": [], "translation": "", "source_ref": "东晋·陶渊明《桃花源记》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_xiaoshitanji", "category": "课内", "title": "小石潭记", "author": "柳宗元", "dynasty": "唐", "grade": "八下", "theme": "写景抒情", "ability_focus": ["写景手法", "作者情感", "句子翻译"], "text": "", "notes": [], "translation": "", "source_ref": "唐·柳宗元《小石潭记》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_beimingyouyu", "category": "课内", "title": "北冥有鱼", "author": "《庄子》", "dynasty": "先秦", "grade": "八下", "theme": "想象·逍遥", "ability_focus": ["实词", "句子翻译", "内容理解"], "text": "", "notes": [], "translation": "", "source_ref": "先秦《庄子·逍遥游》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_mashuo", "category": "课内", "title": "马说", "author": "韩愈", "dynasty": "唐", "grade": "八下", "theme": "托物寓意·怀才不遇", "ability_focus": ["文言虚词之", "托物言志", "句子翻译"], "text": "", "notes": [], "translation": "", "source_ref": "唐·韩愈《马说》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_yueyanglouji", "category": "课内", "title": "岳阳楼记", "author": "范仲淹", "dynasty": "北宋", "grade": "九上", "theme": "抒怀·先忧后乐", "ability_focus": ["句子翻译", "写景抒情", "议论说理"], "text": "", "notes": [], "translation": "", "source_ref": "北宋·范仲淹《岳阳楼记》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_zuiwengtingji", "category": "课内", "title": "醉翁亭记", "author": "欧阳修", "dynasty": "北宋", "grade": "九上", "theme": "写景抒情·与民同乐", "ability_focus": ["文言虚词也", "写景手法", "句子翻译"], "text": "", "notes": [], "translation": "", "source_ref": "北宋·欧阳修《醉翁亭记》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_huxintingkanxue", "category": "课内", "title": "湖心亭看雪", "author": "张岱", "dynasty": "明", "grade": "九上", "theme": "写景·痴情雅趣", "ability_focus": ["写景手法", "作者情感", "句子翻译"], "text": "", "notes": [], "translation": "", "source_ref": "明·张岱《陶庵梦忆》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_yuwosuoyuye", "category": "课内", "title": "鱼我所欲也", "author": "《孟子》", "dynasty": "先秦", "grade": "九下", "theme": "议论·舍生取义", "ability_focus": ["议论说理", "句子翻译", "虚词"], "text": "", "notes": [], "translation": "", "source_ref": "先秦《孟子·告子上》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_songdongyangmasheng", "category": "课内", "title": "送东阳马生序", "author": "宋濂", "dynasty": "明", "grade": "九下", "theme": "劝学·勤苦", "ability_focus": ["实词", "句子翻译", "内容理解"], "text": "", "notes": [], "translation": "", "source_ref": "明·宋濂《送东阳马生序》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_caogui", "category": "课内", "title": "曹刿论战", "author": "《左传》", "dynasty": "先秦", "grade": "九下", "theme": "叙事·军事智慧", "ability_focus": ["实词", "句子翻译", "人物形象"], "text": "", "notes": [], "translation": "", "source_ref": "先秦《左传·庄公十年》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_zouji", "category": "课内", "title": "邹忌讽齐王纳谏", "author": "《战国策》", "dynasty": "先秦", "grade": "九下", "theme": "叙事说理·纳谏", "ability_focus": ["实词", "句子翻译", "人物形象"], "text": "", "notes": [], "translation": "", "source_ref": "先秦《战国策·齐策一》", "verified": false, "_todo": "粘贴教材原文并补注释译文"},
+    {"id": "kw_chushibiao", "category": "课内", "title": "出师表", "author": "诸葛亮", "dynasty": "三国", "grade": "九下", "theme": "陈情·忠君报国", "ability_focus": ["实词", "句子翻译", "内容理解"], "text": "", "notes": [], "translation": "", "source_ref": "三国·诸葛亮《出师表》", "verified": false, "_todo": "粘贴教材原文并补注释译文"}
+  ]
+}

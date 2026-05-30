@@ -1,0 +1,12 @@
+# Normalize text to LF in the repo.
+* text=auto eol=lf
+
+# Scripts must keep their native endings.
+gradlew      text eol=lf
+*.bat        text eol=crlf
+
+# Binaries — never touch.
+*.jar        binary
+*.png        binary
+*.jks        binary
+*.keystore   binary
