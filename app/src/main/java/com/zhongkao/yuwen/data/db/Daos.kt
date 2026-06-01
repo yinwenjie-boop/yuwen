@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -60,6 +61,16 @@ data class ExerciseTimePoint(
     val type: String
 )
 
+/** 练习历史列表投影：含设置/批改快照（解析出难度、文体、得分），不拉大段出题快照 payloadJson。 */
+data class ExerciseSummary(
+    val id: Long,
+    val type: String,
+    val createdAt: Long,
+    val totalTimeSec: Int,
+    val configJson: String,
+    val gradingJson: String
+)
+
 @Dao
 interface ExerciseDao {
     @Insert
@@ -76,6 +87,32 @@ interface ExerciseDao {
 
     @Query("SELECT id, createdAt, totalTimeSec, type FROM exercise WHERE status = 'graded' ORDER BY createdAt DESC LIMIT :limit")
     fun observeRecentGraded(limit: Int): Flow<List<ExerciseTimePoint>>
+
+    /** 练习历史：已批改的练习，新→旧。 */
+    @Query("SELECT id, type, createdAt, totalTimeSec, configJson, gradingJson FROM exercise WHERE status = 'graded' ORDER BY createdAt DESC")
+    fun observeGradedSummaries(): Flow<List<ExerciseSummary>>
+
+    // —— 删除一次练习的级联清理（错题→作答→题目→练习）——
+    @Query("DELETE FROM wrong_question WHERE questionId IN (SELECT id FROM question WHERE exerciseId = :exerciseId)")
+    suspend fun deleteWrongOfExercise(exerciseId: Long)
+
+    @Query("DELETE FROM attempt WHERE questionId IN (SELECT id FROM question WHERE exerciseId = :exerciseId)")
+    suspend fun deleteAttemptsOfExercise(exerciseId: Long)
+
+    @Query("DELETE FROM question WHERE exerciseId = :exerciseId")
+    suspend fun deleteQuestionsOfExercise(exerciseId: Long)
+
+    @Query("DELETE FROM exercise WHERE id = :exerciseId")
+    suspend fun deleteExerciseById(exerciseId: Long)
+
+    /** 原子级联删除：错题→作答→题目→练习，避免留下孤儿行。 */
+    @Transaction
+    suspend fun deleteExerciseCascade(exerciseId: Long) {
+        deleteWrongOfExercise(exerciseId)
+        deleteAttemptsOfExercise(exerciseId)
+        deleteQuestionsOfExercise(exerciseId)
+        deleteExerciseById(exerciseId)
+    }
 }
 
 @Dao
@@ -108,7 +145,11 @@ interface AttemptDao {
     suspend fun byQuestion(questionId: Long): List<Attempt>
 }
 
-/** 错题本展示用投影：连带题干 / 题型 / 所属练习类型（按考点归类时用）。 */
+/**
+ * 错题本展示用投影：题干 / 题型 / 所属练习类型，
+ * 并连带最近一次批改细节（你的作答 / 正确答法 / 错因 / 解析 / 提升建议 / 得分），
+ * 供复习页错题卡展开显示。作答字段经 LEFT JOIN，缺失时用默认值。
+ */
 data class WrongQuestionDetail(
     val wrongId: Long,
     val questionId: Long,
@@ -117,7 +158,15 @@ data class WrongQuestionDetail(
     val qType: String,
     val stem: String,
     val exerciseId: Long,
-    val apiType: String
+    val apiType: String,
+    val maxScore: Int = 0,
+    val refAnswer: String = "",
+    val studentAnswer: String = "",
+    val gotScore: Int = 0,
+    val correctAnswer: String = "",
+    val errorType: String = "",
+    val explanation: String = "",
+    val tip: String = ""
 )
 
 @Dao
@@ -141,10 +190,17 @@ interface WrongQuestionDao {
         """
         SELECT wq.id AS wrongId, wq.questionId AS questionId, wq.abilityTag AS abilityTag,
                wq.addedAt AS addedAt, q.qType AS qType, q.stem AS stem,
-               q.exerciseId AS exerciseId, e.type AS apiType
+               q.exerciseId AS exerciseId, e.type AS apiType,
+               q.maxScore AS maxScore, q.refAnswer AS refAnswer,
+               IFNULL(a.studentAnswer, '') AS studentAnswer, IFNULL(a.gotScore, 0) AS gotScore,
+               IFNULL(a.correctAnswer, '') AS correctAnswer, IFNULL(a.errorType, '') AS errorType,
+               IFNULL(a.explanation, '') AS explanation, IFNULL(a.tip, '') AS tip
         FROM wrong_question wq
         JOIN question q ON wq.questionId = q.id
         JOIN exercise e ON q.exerciseId = e.id
+        LEFT JOIN attempt a ON a.id = (
+            SELECT id FROM attempt WHERE questionId = q.id ORDER BY gradedAt DESC, id DESC LIMIT 1
+        )
         WHERE wq.masteredFlag = 0
         ORDER BY wq.addedAt DESC
         """

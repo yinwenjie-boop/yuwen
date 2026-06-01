@@ -4,6 +4,7 @@ import com.zhongkao.yuwen.data.db.Attempt
 import com.zhongkao.yuwen.data.db.AttemptDao
 import com.zhongkao.yuwen.data.db.Exercise
 import com.zhongkao.yuwen.data.db.ExerciseDao
+import com.zhongkao.yuwen.data.db.ExerciseSummary
 import com.zhongkao.yuwen.data.db.ExerciseTimePoint
 import com.zhongkao.yuwen.data.db.Question
 import com.zhongkao.yuwen.data.db.QuestionDao
@@ -23,6 +24,13 @@ class ExerciseRepository(
     /** 近 N 次已批改练习的用时点（用于薄弱点页的"用时曲线"，按时间升序便于画图）。 */
     fun observeRecentGraded(limit: Int = 10): Flow<List<ExerciseTimePoint>> =
         exerciseDao.observeRecentGraded(limit)
+
+    /** 练习历史：全部已批改练习（新→旧），供历史页列表。 */
+    fun observeGradedSummaries(): Flow<List<ExerciseSummary>> =
+        exerciseDao.observeGradedSummaries()
+
+    /** 删除一次练习（级联清理其错题/作答/题目）。 */
+    suspend fun deleteExercise(exerciseId: Long) = exerciseDao.deleteExerciseCascade(exerciseId)
 
     data class SavedExercise(val exerciseId: Long, val questionIds: List<Long>)
 

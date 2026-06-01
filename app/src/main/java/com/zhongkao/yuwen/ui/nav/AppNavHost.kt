@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.zhongkao.yuwen.AppContainer
 import com.zhongkao.yuwen.ui.dashboard.DashboardScreen
 import com.zhongkao.yuwen.ui.exercise.ExerciseScreen
+import com.zhongkao.yuwen.ui.history.HistoryScreen
 import com.zhongkao.yuwen.ui.result.ResultScreen
 import com.zhongkao.yuwen.ui.review.PendingReviewScreen
 import com.zhongkao.yuwen.ui.review.ReviewScreen
@@ -22,6 +23,7 @@ object Routes {
     const val EXERCISE = "exercise"
     const val RESULT = "result"
     const val REVIEW = "review"
+    const val HISTORY = "history"
     const val PENDING_REVIEW = "pending_review"
     const val ARG_EXERCISE_ID = "exerciseId"
     fun result(exerciseId: Long) = "$RESULT/$exerciseId"
@@ -34,8 +36,12 @@ fun AppNavHost(container: AppContainer) {
         composable(Routes.DASHBOARD) {
             DashboardScreen(
                 container = container,
-                onStartPractice = { nav.navigate(Routes.SETUP) },
+                onStartPractice = { type ->
+                    container.pendingType = type
+                    nav.navigate(Routes.SETUP)
+                },
                 onOpenReview = { nav.navigate(Routes.REVIEW) },
+                onOpenHistory = { nav.navigate(Routes.HISTORY) },
                 onOpenSettings = { nav.navigate(Routes.SETTINGS) },
                 onOpenPendingReview = { nav.navigate(Routes.PENDING_REVIEW) }
             )
@@ -59,6 +65,13 @@ fun AppNavHost(container: AppContainer) {
                     container.pendingRequest = req
                     nav.navigate(Routes.EXERCISE)
                 },
+                onBack = { nav.popBackStack() }
+            )
+        }
+        composable(Routes.HISTORY) {
+            HistoryScreen(
+                container = container,
+                onOpen = { id -> nav.navigate(Routes.result(id)) },
                 onBack = { nav.popBackStack() }
             )
         }

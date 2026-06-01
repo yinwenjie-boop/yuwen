@@ -15,3 +15,5 @@ captures/
 # Keystores / secrets (never commit API keys)
 *.jks
 *.keystore
+docs/APIkey.txt
+*APIkey*.txt

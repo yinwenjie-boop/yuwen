@@ -60,4 +60,12 @@ class SettlementCalculatorTest {
         assertEquals(ExamConfig.KEY_XIANDAI_NARRATIVE, SettlementCalculator.baselineKey("xiandai", "散文"))
         assertEquals(ExamConfig.KEY_WENYAN_COMPARE, SettlementCalculator.baselineKey("wenyan_compare", null))
     }
+
+    @Test
+    fun `小说归文学类基准 非连续性文本归实用类基准`() {
+        // 小说与记叙/散文同属文学类 → narrative
+        assertEquals(ExamConfig.KEY_XIANDAI_NARRATIVE, SettlementCalculator.baselineKey("xiandai", "小说"))
+        // 非连续性文本属实用/论述类 → expository
+        assertEquals(ExamConfig.KEY_XIANDAI_EXPOSITORY, SettlementCalculator.baselineKey("xiandai", "非连续性文本"))
+    }
 }

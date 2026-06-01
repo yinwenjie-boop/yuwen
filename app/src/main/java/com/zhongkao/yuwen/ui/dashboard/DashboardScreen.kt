@@ -33,16 +33,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.zhongkao.yuwen.AppContainer
+import com.zhongkao.yuwen.domain.usecase.ExerciseType
 
 /**
  * 首页（阶段 1 + 阶段 4）：进度卡（连续打卡/等级称号/错题数）+ 薄弱点 Top3 + 语料库篇数。
+ * 两个练习入口（文言文 / 现代文阅读）直达出题设置页并预选题型。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     container: AppContainer,
-    onStartPractice: () -> Unit,
+    onStartPractice: (ExerciseType) -> Unit,
     onOpenReview: () -> Unit,
+    onOpenHistory: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenPendingReview: () -> Unit,
     viewModel: DashboardViewModel = viewModel(
@@ -114,11 +117,23 @@ fun DashboardScreen(
                 }
             }
 
-            Button(onClick = onStartPractice, modifier = Modifier.fillMaxWidth()) {
-                Text("开始练习")
+            Button(
+                onClick = { onStartPractice(ExerciseType.WENYAN_COMPARE) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("文言文练习")
+            }
+            Button(
+                onClick = { onStartPractice(ExerciseType.XIANDAI) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("现代文阅读练习")
             }
             OutlinedButton(onClick = onOpenReview, modifier = Modifier.fillMaxWidth()) {
                 Text("错题与薄弱点（$wrongCount 道错题）")
+            }
+            OutlinedButton(onClick = onOpenHistory, modifier = Modifier.fillMaxWidth()) {
+                Text("练习历史")
             }
             if (pendingReview > 0) {
                 OutlinedButton(onClick = onOpenPendingReview, modifier = Modifier.fillMaxWidth()) {
